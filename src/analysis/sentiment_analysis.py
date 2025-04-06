@@ -1,247 +1,212 @@
 """
 Sentiment Analysis and Risk Classification Module
 
-This module provides functionality for analyzing sentiment and detecting risk levels
-in crisis-related text data. It uses VADER sentiment analysis and pattern matching
-to identify high-risk content.
-
-Key Features:
-- Sentiment analysis using VADER
-- Risk level classification
-- Pattern matching for crisis-related phrases
-- Batch processing of text data
-- Statistical analysis of results
-
-Dependencies:
-- vaderSentiment: For sentiment analysis
-- pandas: For data manipulation
-- numpy: For numerical operations
-- sklearn: For text vectorization
+This module provides functionality for:
+1. Sentiment analysis using VADER
+2. Risk level classification based on content
+3. Visualization of sentiment and risk distributions
 """
 
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import pandas as pd
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-import re
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import matplotlib.pyplot as plt
+import seaborn as sns
+from typing import List, Dict
+import os
 
 class CrisisAnalyzer:
     """
-    A class for analyzing sentiment and detecting risk levels in crisis-related text.
+    Analyzes social media posts for sentiment and risk levels.
     
-    This class combines sentiment analysis with pattern matching to identify
-    potentially high-risk content. It provides methods for both individual text
-    analysis and batch processing of datasets.
-    
-    Attributes:
-        sentiment_analyzer (SentimentIntensityAnalyzer): VADER sentiment analyzer
-        high_risk_phrases (list): List of high-risk phrases to detect
-        moderate_risk_phrases (list): List of moderate-risk phrases to detect
-        high_risk_patterns (list): Compiled regex patterns for high-risk phrases
-        moderate_risk_patterns (list): Compiled regex patterns for moderate-risk phrases
+    This class provides methods for:
+    - Sentiment analysis using VADER
+    - Risk level classification
+    - Distribution visualization
     """
     
     def __init__(self):
-        """
-        Initialize the CrisisAnalyzer with sentiment analyzer and risk patterns.
+        """Initialize the analyzer with VADER sentiment analyzer."""
+        self.analyzer = SentimentIntensityAnalyzer()
         
-        Sets up the VADER sentiment analyzer and compiles regex patterns for
-        detecting high-risk and moderate-risk phrases in text.
-        """
-        self.sentiment_analyzer = SentimentIntensityAnalyzer()
-        
-        # Define high-risk keywords and phrases
-        self.high_risk_phrases = [
-            r"don't want to live",
-            r"want to die",
-            r"end it all",
-            r"kill myself",
-            r"suicide",
-            r"no way out",
-            r"can't go on",
-            r"give up",
-            r"hopeless",
-            r"worthless"
-        ]
-        
-        self.moderate_risk_phrases = [
-            r"need help",
-            r"struggling",
-            r"overwhelmed",
-            r"can't cope",
-            r"depressed",
-            r"anxious",
-            r"lost",
-            r"alone",
-            r"scared",
-            r"worried"
-        ]
-        
-        # Compile regex patterns
-        self.high_risk_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.high_risk_phrases]
-        self.moderate_risk_patterns = [re.compile(pattern, re.IGNORECASE) for pattern in self.moderate_risk_phrases]
-    
-    def analyze_sentiment(self, text):
-        """
-        Analyze sentiment using VADER.
-        
-        Args:
-            text (str): Input text to analyze
-            
-        Returns:
-            dict: Sentiment scores containing:
-                - neg: Negative sentiment score
-                - neu: Neutral sentiment score
-                - pos: Positive sentiment score
-                - compound: Overall sentiment score
-                
-        Returns zero scores for non-string input.
-        """
-        if not isinstance(text, str):
-            return {'neg': 0, 'neu': 0, 'pos': 0, 'compound': 0}
-        
-        return self.sentiment_analyzer.polarity_scores(text)
-    
-    def detect_risk_level(self, text):
-        """
-        Detect risk level based on keyword patterns.
-        
-        Args:
-            text (str): Input text to analyze
-            
-        Returns:
-            str: Risk level ('high', 'moderate', or 'low')
-            
-        The risk level is determined by:
-        1. Checking for high-risk phrases
-        2. Checking for moderate-risk phrases
-        3. Defaulting to 'low' if no risk phrases are found
-        """
-        if not isinstance(text, str):
-            return 'low'
-        
-        text = text.lower()
-        
-        # Check for high-risk phrases
-        for pattern in self.high_risk_patterns:
-            if pattern.search(text):
-                return 'high'
-        
-        # Check for moderate-risk phrases
-        for pattern in self.moderate_risk_patterns:
-            if pattern.search(text):
-                return 'moderate'
-        
-        return 'low'
-    
-    def process_text(self, text):
-        """
-        Process a single text entry.
-        
-        Args:
-            text (str): Input text to process
-            
-        Returns:
-            dict: Analysis results containing:
-                - sentiment_negative: Negative sentiment score
-                - sentiment_neutral: Neutral sentiment score
-                - sentiment_positive: Positive sentiment score
-                - sentiment_compound: Overall sentiment score
-                - risk_level: Detected risk level
-        """
-        sentiment = self.analyze_sentiment(text)
-        risk_level = self.detect_risk_level(text)
-        
-        return {
-            'sentiment_negative': sentiment['neg'],
-            'sentiment_neutral': sentiment['neu'],
-            'sentiment_positive': sentiment['pos'],
-            'sentiment_compound': sentiment['compound'],
-            'risk_level': risk_level
+        # Define risk level keywords
+        self.risk_keywords = {
+            'high': [
+                'suicidal', 'kill myself', 'end it all', 'want to die',
+                'can\'t go on', 'no way out', 'hopeless', 'worthless'
+            ],
+            'moderate': [
+                'depressed', 'anxious', 'overwhelmed', 'struggling',
+                'need help', 'can\'t cope', 'lost', 'alone'
+            ],
+            'low': [
+                'mental health', 'therapy', 'counseling', 'support',
+                'self care', 'wellness', 'mindfulness'
+            ]
         }
     
-    def process_dataframe(self, df, text_column):
+    def analyze_sentiment(self, text: str) -> Dict[str, float]:
         """
-        Process a DataFrame containing text data.
+        Analyze the sentiment of a text using VADER.
         
         Args:
-            df (pd.DataFrame): Input DataFrame
-            text_column (str): Name of the column containing text to analyze
+            text (str): The text to analyze
             
         Returns:
-            pd.DataFrame: Original DataFrame with analysis results added
-            
-        Creates new columns for sentiment scores and risk level.
+            Dict[str, float]: Sentiment scores (negative, neutral, positive, compound)
         """
-        results = []
+        # Handle NaN values and convert to string
+        if pd.isna(text):
+            return {'neg': 0.0, 'neu': 1.0, 'pos': 0.0, 'compound': 0.0}
         
-        for text in df[text_column]:
-            result = self.process_text(text)
-            results.append(result)
+        # Ensure text is string type
+        text = str(text)
         
-        # Create DataFrame from results
-        results_df = pd.DataFrame(results)
-        
-        # Combine with original DataFrame
-        return pd.concat([df, results_df], axis=1)
+        return self.analyzer.polarity_scores(text)
     
-    def save_results(self, df, output_file):
+    def classify_risk_level(self, text: str) -> str:
         """
-        Save analysis results to CSV file.
+        Classify the risk level of a post based on its content.
         
         Args:
-            df (pd.DataFrame): DataFrame containing analysis results
-            output_file (str): Path to save the CSV file
-        """
-        df.to_csv(output_file, index=False)
-        print(f"Analysis results saved to {output_file}")
-    
-    def get_risk_distribution(self, df):
-        """
-        Get distribution of risk levels.
-        
-        Args:
-            df (pd.DataFrame): DataFrame containing risk level data
+            text (str): The text to classify
             
         Returns:
-            pd.Series: Count of posts by risk level
+            str: Risk level ('high', 'moderate', 'low')
         """
-        return df['risk_level'].value_counts()
+        # Handle NaN values
+        if pd.isna(text):
+            return 'unknown'
+            
+        # Ensure text is string type
+        text_lower = str(text).lower()
+        
+        # Check for high-risk keywords
+        if any(keyword in text_lower for keyword in self.risk_keywords['high']):
+            return 'high'
+            
+        # Check for moderate-risk keywords
+        if any(keyword in text_lower for keyword in self.risk_keywords['moderate']):
+            return 'moderate'
+            
+        # Check for low-risk keywords
+        if any(keyword in text_lower for keyword in self.risk_keywords['low']):
+            return 'low'
+        
+        return 'unknown'
     
-    def get_sentiment_summary(self, df):
+    def analyze_posts(self, df: pd.DataFrame, text_column: str = 'text') -> pd.DataFrame:
         """
-        Get summary statistics of sentiment scores.
+        Analyze a DataFrame of posts for sentiment and risk levels.
         
         Args:
-            df (pd.DataFrame): DataFrame containing sentiment scores
+            df (pd.DataFrame): DataFrame containing posts
+            text_column (str): Name of the column containing post text
             
         Returns:
-            pd.DataFrame: Summary statistics for each sentiment score
+            pd.DataFrame: DataFrame with added sentiment and risk columns
         """
-        return df[['sentiment_negative', 'sentiment_neutral', 'sentiment_positive', 'sentiment_compound']].describe()
+        # Add sentiment analysis columns
+        sentiment_scores = df[text_column].apply(self.analyze_sentiment)
+        df['sentiment_neg'] = sentiment_scores.apply(lambda x: x['neg'])
+        df['sentiment_neu'] = sentiment_scores.apply(lambda x: x['neu'])
+        df['sentiment_pos'] = sentiment_scores.apply(lambda x: x['pos'])
+        df['sentiment_compound'] = sentiment_scores.apply(lambda x: x['compound'])
+        
+        # Add risk level column
+        df['risk_level'] = df[text_column].apply(self.classify_risk_level)
+        
+        return df
+    
+    def plot_distributions(self, df: pd.DataFrame, output_dir: str = 'output/reports'):
+        """
+        Create and save plots showing the distribution of posts by sentiment and risk level.
+        
+        Args:
+            df (pd.DataFrame): DataFrame with sentiment and risk analysis
+            output_dir (str): Directory to save the plots
+        """
+        # Create output directory if it doesn't exist
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Set style
+        plt.style.use('seaborn')
+        
+        # Create figure with subplots
+        fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+        fig.suptitle('Sentiment and Risk Level Distributions', fontsize=16)
+        
+        # Plot 1: Sentiment Compound Score Distribution
+        sns.histplot(data=df, x='sentiment_compound', bins=30, ax=axes[0, 0])
+        axes[0, 0].set_title('Sentiment Compound Score Distribution')
+        axes[0, 0].set_xlabel('Compound Score')
+        axes[0, 0].set_ylabel('Count')
+        
+        # Plot 2: Risk Level Distribution
+        risk_counts = df['risk_level'].value_counts()
+        sns.barplot(x=risk_counts.index, y=risk_counts.values, ax=axes[0, 1])
+        axes[0, 1].set_title('Risk Level Distribution')
+        axes[0, 1].set_xlabel('Risk Level')
+        axes[0, 1].set_ylabel('Count')
+        
+        # Plot 3: Sentiment by Risk Level
+        sns.boxplot(data=df, x='risk_level', y='sentiment_compound', ax=axes[1, 0])
+        axes[1, 0].set_title('Sentiment by Risk Level')
+        axes[1, 0].set_xlabel('Risk Level')
+        axes[1, 0].set_ylabel('Compound Score')
+        
+        # Plot 4: Risk Level by Platform
+        if 'platform' in df.columns:
+            sns.countplot(data=df, x='platform', hue='risk_level', ax=axes[1, 1])
+            axes[1, 1].set_title('Risk Level by Platform')
+            axes[1, 1].set_xlabel('Platform')
+            axes[1, 1].set_ylabel('Count')
+        
+        # Adjust layout and save
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, 'sentiment_risk_distributions.png'))
+        plt.close()
+        
+        # Save statistics to text file
+        with open(os.path.join(output_dir, 'sentiment_risk_stats.txt'), 'w') as f:
+            f.write("Sentiment and Risk Level Statistics\n")
+            f.write("=================================\n\n")
+            
+            f.write("Risk Level Distribution:\n")
+            f.write(str(risk_counts) + "\n\n")
+            
+            f.write("Sentiment Statistics by Risk Level:\n")
+            for risk_level in df['risk_level'].unique():
+                f.write(f"\n{risk_level.upper()} RISK:\n")
+                stats = df[df['risk_level'] == risk_level]['sentiment_compound'].describe()
+                f.write(str(stats) + "\n")
 
-# if __name__ == "__main__":
-#     # Example usage
-#     analyzer = CrisisAnalyzer()
+def main():
+    """Main function to run the analysis."""
+    # Create analyzer instance
+    analyzer = CrisisAnalyzer()
     
-#     # Sample data
-#     sample_data = pd.DataFrame({
-#         'text': [
-#             "I don't want to live anymore, everything is hopeless",
-#             "Feeling a bit overwhelmed with work lately",
-#             "Had a great day today! Feeling positive about the future",
-#             "Struggling with anxiety but trying to stay strong",
-#             "Need help with my mental health"
-#         ]
-#     })
+    # Load data
+    try:
+        # Try to load Reddit data
+        reddit_df = pd.read_csv('data/raw/reddit_posts.csv')
+        reddit_df['platform'] = 'reddit'
+        df = reddit_df
+    except FileNotFoundError:
+        print("Reddit data not found. Please run the data extraction script first.")
+        return
     
-#     # Process the data
-#     results = analyzer.process_dataframe(sample_data, 'text')
-#     print("\nProcessed Data:")
-#     print(results)
+    # Analyze posts
+    analyzed_df = analyzer.analyze_posts(df, text_column='text')
     
-#     print("\nRisk Level Distribution:")
-#     print(analyzer.get_risk_distribution(results))
+    # Save analyzed data
+    os.makedirs('data/processed', exist_ok=True)
+    analyzed_df.to_csv('data/processed/analyzed_posts.csv', index=False)
     
-#     print("\nSentiment Summary:")
-#     print(analyzer.get_sentiment_summary(results)) 
+    # Create and save visualizations
+    analyzer.plot_distributions(analyzed_df)
+    
+    print("Analysis complete! Check the output directory for results.")
+
+if __name__ == "__main__":
+    main() 
