@@ -195,6 +195,39 @@ class RedditDataExtractor:
         self.save_to_csv(all_posts, output_file)
         return all_posts
 
-# if __name__ == "__main__":
-#     extractor = RedditDataExtractor()
-#     extractor.run_extraction('data/raw/reddit_posts.csv') 
+def main():
+    """Main function to run the Reddit data extraction."""
+    # Create Reddit extractor instance
+    extractor = RedditDataExtractor()
+    
+    # Define subreddits to monitor
+    subreddits = [
+        'depression',
+        'anxiety',
+        'mentalhealth',
+        'suicidewatch',
+        'selfharm'
+    ]
+    
+    # Define keywords for filtering
+    keywords = [
+        'depressed', 'anxiety', 'suicidal', 'self harm',
+        'mental health', 'therapy', 'counseling', 'help',
+        'overwhelmed', 'struggling', 'hopeless', 'worthless'
+    ]
+    
+    # Extract posts
+    posts = extractor.run_extraction(
+        subreddits=subreddits,
+        keywords=keywords,
+        limit=1000  # Number of posts per subreddit
+    )
+    
+    # Save raw data
+    os.makedirs('data/raw', exist_ok=True)
+    posts.to_csv('data/raw/reddit_posts.csv', index=False)
+    
+    print(f"Extracted {len(posts)} posts. Data saved to data/raw/reddit_posts.csv")
+
+if __name__ == "__main__":
+    main() 

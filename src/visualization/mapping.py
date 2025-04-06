@@ -329,29 +329,34 @@ class CrisisMapVisualizer:
         
         return self.map
 
-# if __name__ == "__main__":
-#     # Example usage with sample data
-#     visualizer = CrisisMapVisualizer()
+def main():
+    """Main function to create crisis maps."""
+    # Create map visualizer instance
+    visualizer = CrisisMapVisualizer()
     
-#     # Sample data
-#     sample_data = pd.DataFrame({
-#         'latitude': [40.7128, 34.0522, 41.8781, 51.5074, 43.6532],
-#         'longitude': [-74.0060, -118.2437, -87.6298, -0.1278, -79.3832],
-#         'extracted_location': ['New York', 'Los Angeles', 'Chicago', 'London', 'Toronto'],
-#         'risk_level': ['high', 'moderate', 'low', 'high', 'moderate']
-#     })
+    # Load analyzed data
+    try:
+        df = pd.read_csv('data/processed/analyzed_reddit_posts.csv')
+    except FileNotFoundError:
+        print("Analyzed data not found. Please run the analysis script first.")
+        return
     
-#     # Create and display different types of maps
-#     print("Creating heatmap...")
-#     visualizer.create_base_map()
-#     visualizer.add_heatmap(sample_data)
-#     visualizer.save_map('heatmap.html')
+    # Create base map
+    visualizer.create_base_map()
     
-#     print("\nCreating risk level map...")
-#     visualizer.create_base_map()
-#     visualizer.add_risk_level_layer(sample_data)
-#     visualizer.save_map('risk_map.html')
+    # Add heatmap layer
+    visualizer.add_heatmap(df)
     
-#     print("\nCreating top locations map...")
-#     visualizer.show_top_locations(sample_data)
-#     visualizer.save_map('top_locations.html') 
+    # Add risk level markers
+    visualizer.add_risk_level_layer(df)
+    
+    # Add top locations
+    visualizer.show_top_locations(df, n=5)
+    
+    # Save the map
+    visualizer.save_map('output/maps/crisis_heatmap.html')
+    
+    print("Map visualization complete! Check output/maps/crisis_heatmap.html")
+
+if __name__ == "__main__":
+    main() 

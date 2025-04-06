@@ -188,20 +188,18 @@ def main():
     
     # Load data
     try:
-        # Try to load Reddit data
-        reddit_df = pd.read_csv('data/raw/reddit_posts.csv')
-        reddit_df['platform'] = 'reddit'
-        df = reddit_df
+        # Load cleaned Reddit data
+        df = pd.read_csv('data/processed/cleaned_reddit_posts.csv')
     except FileNotFoundError:
-        print("Reddit data not found. Please run the data extraction script first.")
+        print("Cleaned Reddit data not found. Please run the preprocessing script first.")
         return
     
     # Analyze posts
-    analyzed_df = analyzer.analyze_posts(df, text_column='text')
+    analyzed_df = analyzer.analyze_posts(df)
     
     # Save analyzed data
     os.makedirs('data/processed', exist_ok=True)
-    analyzed_df.to_csv('data/processed/analyzed_posts.csv', index=False)
+    analyzed_df.to_csv('data/processed/analyzed_reddit_posts.csv', index=False)
     
     # Create and save visualizations
     analyzer.plot_distributions(analyzed_df)

@@ -24,6 +24,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import emoji
 import pandas as pd
+import os
 
 class TextCleaner:
     """
@@ -177,16 +178,26 @@ class TextCleaner:
         df.to_csv(output_file, index=False)
         print(f"Cleaned data saved to {output_file}")
 
-# if __name__ == "__main__":
-#     # Example usage
-#     cleaner = TextCleaner()
+def main():
+    """Main function to run the text cleaning process."""
+    # Create text cleaner instance
+    cleaner = TextCleaner()
     
-#     # Load Reddit posts data
-#     reddit_posts = pd.read_csv("data/raw/reddit_posts.csv")
+    # Load raw data
+    try:
+        df = pd.read_csv('data/raw/reddit_posts.csv')
+    except FileNotFoundError:
+        print("Raw Reddit data not found. Please run the data extraction script first.")
+        return
     
-#     # Clean the text columns
-#     text_columns = ['title', 'selftext'] 
-#     cleaned_data = cleaner.process_dataframe(reddit_posts, text_columns)
+    # Clean the text
+    cleaned_df = cleaner.process_dataframe(df, ['title', 'selftext'])
     
-#     # Save cleaned data
-#     cleaner.save_cleaned_data(cleaned_data, "data/processed/reddit_posts_cleaned.csv")
+    # Save cleaned data
+    os.makedirs('data/processed', exist_ok=True)
+    cleaned_df.to_csv('data/processed/cleaned_reddit_posts.csv', index=False)
+    
+    print("Text cleaning complete! Check data/processed/cleaned_reddit_posts.csv for results.")
+
+if __name__ == "__main__":
+    main()
