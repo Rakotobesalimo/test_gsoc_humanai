@@ -177,19 +177,19 @@ class TextCleaner:
         df.to_csv(output_file, index=False)
         print(f"Cleaned data saved to {output_file}")
 
-if __name__ == "__main__":
-    # Example usage
-    cleaner = TextCleaner()
+# if __name__ == "__main__":
+#     # Example usage
+#     cleaner = TextCleaner()
     
-    # Load sample data
-    sample_data = pd.DataFrame({
-        'text': [
-            "Feeling depressed 😔 Need help! https://example.com",
-            "RT @user: Struggling with anxiety #mentalhealth",
-            "Just overwhelmed with everything right now..."
-        ]
-    })
+#     # Load sample data
+#     sample_data = pd.DataFrame({
+#         'text': [
+#             "Feeling depressed 😔 Need help! https://example.com",
+#             "RT @user: Struggling with anxiety #mentalhealth",
+#             "Just overwhelmed with everything right now..."
+#         ]
+#     })
     
-    # Clean the data
-    cleaned_data = cleaner.process_dataframe(sample_data, ['text'])
-    print(cleaned_data) 
+#     # Clean the data
+#     cleaned_data = cleaner.process_dataframe(sample_data, ['text'])
+#     print(cleaned_data) 

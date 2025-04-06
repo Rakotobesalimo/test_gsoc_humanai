@@ -220,28 +220,28 @@ class CrisisAnalyzer:
         """
         return df[['sentiment_negative', 'sentiment_neutral', 'sentiment_positive', 'sentiment_compound']].describe()
 
-if __name__ == "__main__":
-    # Example usage
-    analyzer = CrisisAnalyzer()
+# if __name__ == "__main__":
+#     # Example usage
+#     analyzer = CrisisAnalyzer()
     
-    # Sample data
-    sample_data = pd.DataFrame({
-        'text': [
-            "I don't want to live anymore, everything is hopeless",
-            "Feeling a bit overwhelmed with work lately",
-            "Had a great day today! Feeling positive about the future",
-            "Struggling with anxiety but trying to stay strong",
-            "Need help with my mental health"
-        ]
-    })
+#     # Sample data
+#     sample_data = pd.DataFrame({
+#         'text': [
+#             "I don't want to live anymore, everything is hopeless",
+#             "Feeling a bit overwhelmed with work lately",
+#             "Had a great day today! Feeling positive about the future",
+#             "Struggling with anxiety but trying to stay strong",
+#             "Need help with my mental health"
+#         ]
+#     })
     
-    # Process the data
-    results = analyzer.process_dataframe(sample_data, 'text')
-    print("\nProcessed Data:")
-    print(results)
+#     # Process the data
+#     results = analyzer.process_dataframe(sample_data, 'text')
+#     print("\nProcessed Data:")
+#     print(results)
     
-    print("\nRisk Level Distribution:")
-    print(analyzer.get_risk_distribution(results))
+#     print("\nRisk Level Distribution:")
+#     print(analyzer.get_risk_distribution(results))
     
-    print("\nSentiment Summary:")
-    print(analyzer.get_sentiment_summary(results)) 
+#     print("\nSentiment Summary:")
+#     print(analyzer.get_sentiment_summary(results)) 

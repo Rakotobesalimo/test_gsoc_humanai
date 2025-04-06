@@ -371,9 +371,9 @@ class TwitterDataExtractor:
             
         return all_tweets
 
-if __name__ == "__main__":
-    try:
-        extractor = TwitterDataExtractor()
-        extractor.run_extraction()
-    except Exception as e:
-        print(f"Error running extraction: {str(e)}") 
+# if __name__ == "__main__":
+#     try:
+#         extractor = TwitterDataExtractor()
+#         extractor.run_extraction()
+#     except Exception as e:
+#         print(f"Error running extraction: {str(e)}") 

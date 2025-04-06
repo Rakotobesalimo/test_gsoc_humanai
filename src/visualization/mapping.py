@@ -329,29 +329,29 @@ class CrisisMapVisualizer:
         
         return self.map
 
-if __name__ == "__main__":
-    # Example usage with sample data
-    visualizer = CrisisMapVisualizer()
+# if __name__ == "__main__":
+#     # Example usage with sample data
+#     visualizer = CrisisMapVisualizer()
     
-    # Sample data
-    sample_data = pd.DataFrame({
-        'latitude': [40.7128, 34.0522, 41.8781, 51.5074, 43.6532],
-        'longitude': [-74.0060, -118.2437, -87.6298, -0.1278, -79.3832],
-        'extracted_location': ['New York', 'Los Angeles', 'Chicago', 'London', 'Toronto'],
-        'risk_level': ['high', 'moderate', 'low', 'high', 'moderate']
-    })
+#     # Sample data
+#     sample_data = pd.DataFrame({
+#         'latitude': [40.7128, 34.0522, 41.8781, 51.5074, 43.6532],
+#         'longitude': [-74.0060, -118.2437, -87.6298, -0.1278, -79.3832],
+#         'extracted_location': ['New York', 'Los Angeles', 'Chicago', 'London', 'Toronto'],
+#         'risk_level': ['high', 'moderate', 'low', 'high', 'moderate']
+#     })
     
-    # Create and display different types of maps
-    print("Creating heatmap...")
-    visualizer.create_base_map()
-    visualizer.add_heatmap(sample_data)
-    visualizer.save_map('heatmap.html')
+#     # Create and display different types of maps
+#     print("Creating heatmap...")
+#     visualizer.create_base_map()
+#     visualizer.add_heatmap(sample_data)
+#     visualizer.save_map('heatmap.html')
     
-    print("\nCreating risk level map...")
-    visualizer.create_base_map()
-    visualizer.add_risk_level_layer(sample_data)
-    visualizer.save_map('risk_map.html')
+#     print("\nCreating risk level map...")
+#     visualizer.create_base_map()
+#     visualizer.add_risk_level_layer(sample_data)
+#     visualizer.save_map('risk_map.html')
     
-    print("\nCreating top locations map...")
-    visualizer.show_top_locations(sample_data)
-    visualizer.save_map('top_locations.html') 
+#     print("\nCreating top locations map...")
+#     visualizer.show_top_locations(sample_data)
+#     visualizer.save_map('top_locations.html') 
