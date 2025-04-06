@@ -225,15 +225,15 @@ def main():
     
     results = {}
     
-    if args.platform in ['twitter', 'all']:
-        print("\n=== Analyzing Twitter Data ===")
-        twitter_results = run_twitter_analysis(args)
-        results['twitter'] = twitter_results
+    # if args.platform in ['twitter', 'all']:
+    #     print("\n=== Analyzing Twitter Data ===")
+    #     twitter_results = run_twitter_analysis(args)
+    #     results['twitter'] = twitter_results
         
-        # Generate report
-        twitter_report = generate_report(twitter_results, 'Twitter')
-        with open('output/reports/twitter_report.txt', 'w') as f:
-            f.write(twitter_report)
+    #     # Generate report
+    #     twitter_report = generate_report(twitter_results, 'Twitter')
+    #     with open('output/reports/twitter_report.txt', 'w') as f:
+    #         f.write(twitter_report)
     
     if args.platform in ['reddit', 'all']:
         print("\n=== Analyzing Reddit Data ===")
