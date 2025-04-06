@@ -177,16 +177,16 @@ class TextCleaner:
         df.to_csv(output_file, index=False)
         print(f"Cleaned data saved to {output_file}")
 
-if __name__ == "__main__":
-    # Example usage
-    cleaner = TextCleaner()
+# if __name__ == "__main__":
+#     # Example usage
+#     cleaner = TextCleaner()
     
-    # Load Reddit posts data
-    reddit_posts = pd.read_csv("data/raw/reddit_posts.csv")
+#     # Load Reddit posts data
+#     reddit_posts = pd.read_csv("data/raw/reddit_posts.csv")
     
-    # Clean the text columns
-    text_columns = ['title', 'selftext'] 
-    cleaned_data = cleaner.process_dataframe(reddit_posts, text_columns)
+#     # Clean the text columns
+#     text_columns = ['title', 'selftext'] 
+#     cleaned_data = cleaner.process_dataframe(reddit_posts, text_columns)
     
-    # Save cleaned data
-    cleaner.save_cleaned_data(cleaned_data, "data/processed/reddit_posts_cleaned.csv")
+#     # Save cleaned data
+#     cleaner.save_cleaned_data(cleaned_data, "data/processed/reddit_posts_cleaned.csv")

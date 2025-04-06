@@ -195,6 +195,6 @@ class RedditDataExtractor:
         self.save_to_csv(all_posts, output_file)
         return all_posts
 
-if __name__ == "__main__":
-    extractor = RedditDataExtractor()
-    extractor.run_extraction('data/raw/reddit_posts.csv') 
+# if __name__ == "__main__":
+#     extractor = RedditDataExtractor()
+#     extractor.run_extraction('data/raw/reddit_posts.csv') 
