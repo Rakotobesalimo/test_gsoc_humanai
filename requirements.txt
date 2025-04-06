@@ -25,3 +25,4 @@ seaborn==0.12.2
 # Utilities
 python-dotenv==1.0.0
 tqdm==4.65.0 
+emoji
