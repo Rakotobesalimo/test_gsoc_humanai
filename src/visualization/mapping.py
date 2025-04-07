@@ -334,29 +334,54 @@ def main():
     # Create map visualizer instance
     visualizer = CrisisMapVisualizer()
     
-    # Load analyzed data
     try:
-        df = pd.read_csv('data/processed/analyzed_reddit_posts.csv')
+        # Load both analyzed and geocoded data
+        analyzed_df = pd.read_csv('data/processed/analyzed_reddit_posts.csv')
+        geocoded_df = pd.read_csv('data/processed/geocoded_reddit_posts.csv')
+        
+        # Merge the dataframes on post_id
+        df = pd.merge(analyzed_df, geocoded_df[['post_id', 'latitude', 'longitude', 'extracted_location']], 
+                     on='post_id', how='left')
+        
+        # Check if required columns exist
+        required_columns = ['latitude', 'longitude']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            print(f"Error: Missing required columns: {missing_columns}")
+            return
+            
+        # Create and save heatmap
+        visualizer.create_base_map()
+        visualizer.add_heatmap(df)
+        visualizer.save_map('output/maps/reddit_heatmap.html')
+        
+        # Only create risk level map if the column exists
+        if 'risk_level' in df.columns:
+            visualizer.create_base_map() 
+            visualizer.add_risk_level_layer(df)
+            visualizer.save_map('output/maps/reddit_risk_map.html')
+        else:
+            print("Warning: 'risk_level' column not found. Skipping risk level map creation.")
+        
+        # Create and save top locations map
+        if 'extracted_location' in df.columns:
+            visualizer.create_base_map()
+            visualizer.show_top_locations(df)
+            visualizer.save_map('output/maps/reddit_top_locations.html')
+        else:
+            print("Warning: 'extracted_location' column not found. Skipping top locations map creation.")
+        
+        print("\nMap visualizations complete! Check output/maps/ directory for the generated maps:")
+        print("- reddit_heatmap.html")
+        if 'risk_level' in df.columns:
+            print("- reddit_risk_map.html")
+        if 'extracted_location' in df.columns:
+            print("- reddit_top_locations.html")
+            
     except FileNotFoundError:
-        print("Analyzed data not found. Please run the analysis script first.")
-        return
-    
-    # Create base map
-    visualizer.create_base_map()
-    
-    # Add heatmap layer
-    visualizer.add_heatmap(df)
-    
-    # Add risk level markers
-    visualizer.add_risk_level_layer(df)
-    
-    # Add top locations
-    visualizer.show_top_locations(df, n=5)
-    
-    # Save the map
-    visualizer.save_map('output/maps/crisis_heatmap.html')
-    
-    print("Map visualization complete! Check output/maps/crisis_heatmap.html")
+        print("Error: Required data files not found. Please run the analysis script first.")
+    except Exception as e:
+        print(f"Error creating maps: {str(e)}")
 
 if __name__ == "__main__":
-    main() 
+    main()

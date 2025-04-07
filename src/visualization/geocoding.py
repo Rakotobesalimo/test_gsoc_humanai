@@ -192,25 +192,15 @@ class LocationExtractor:
         df.to_csv(output_file, index=False)
         print(f"Geocoded data saved to {output_file}")
 
-# if __name__ == "__main__":
-#     # Example usage
-#     extractor = LocationExtractor()
+if __name__ == "__main__":
+    # Test location extraction on sample Reddit data
+    location_extractor = LocationExtractor()
     
-#     # Sample data
-#     sample_data = pd.DataFrame({
-#         'text': [
-#             "Feeling overwhelmed in New York City",
-#             "Need help in Los Angeles",
-#             "Struggling with anxiety in Chicago",
-#             "Depressed in London",
-#             "Looking for support in Toronto"
-#         ]
-#     })
+    # Load sample Reddit posts
+    reddit_df = pd.read_csv('data/raw/reddit_posts.csv')
     
-#     # Process the data
-#     processed_data = extractor.process_dataframe(sample_data, 'text')
-#     print("\nProcessed Data:")
-#     print(processed_data[['text', 'extracted_location', 'latitude', 'longitude']])
+    # Process and geocode locations from posts
+    geocoded_posts = location_extractor.process_dataframe(reddit_df, 'text')
     
-#     print("\nTop Locations:")
-#     print(extractor.get_top_locations(processed_data)) 
+    # Save geocoded data
+    location_extractor.save_geocoded_data(geocoded_posts, 'data/processed/geocoded_reddit_posts.csv')
