@@ -1,0 +1,56 @@
+Sentiment and Risk Level Statistics
+=================================
+
+Risk Level Distribution:
+risk_level
+unknown     158
+moderate    128
+high        126
+low          52
+Name: count, dtype: int64
+
+Sentiment Statistics by Risk Level:
+
+UNKNOWN RISK:
+count    158.000000
+mean      -0.288468
+std        0.705069
+min       -0.998700
+25%       -0.948900
+50%       -0.571100
+75%        0.393575
+max        0.998900
+Name: sentiment_compound, dtype: float64
+
+HIGH RISK:
+count    126.000000
+mean      -0.557937
+std        0.662601
+min       -0.999300
+25%       -0.986925
+50%       -0.926600
+75%       -0.355500
+max        0.992900
+Name: sentiment_compound, dtype: float64
+
+LOW RISK:
+count    52.000000
+mean     -0.176056
+std       0.845375
+min      -0.997600
+25%      -0.969150
+50%      -0.588000
+75%       0.786100
+max       0.998300
+Name: sentiment_compound, dtype: float64
+
+MODERATE RISK:
+count    128.000000
+mean      -0.424223
+std        0.788318
+min       -0.999500
+25%       -0.984825
+50%       -0.906250
+75%        0.212900
+max        0.998100
+Name: sentiment_compound, dtype: float64
