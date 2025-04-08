@@ -26,9 +26,11 @@ test_gsoc_humanai/
 │   ├── analysis/               # Sentiment and risk analysis
 │   │   ├── sentiment_analysis.py  # Sentiment classification
 │   │   └── risk_classification.py # Risk level assessment
-│   └── visualization/          # Mapping and visualization
-│       ├── geocoding.py        # Location extraction and geocoding
-│       └── mapping.py          # Interactive map generation
+│   |   visualization/          # Mapping and visualization
+│   |   ├── geocoding.py        # Location extraction and geocoding
+│   |   └── mapping.py          # Interactive map generation
+|   ├── main.py
+|   ├── all.ipynb
 └── notebooks/
     ├── data_exploration.ipynb  # Data analysis notebook
     └── visualization.ipynb     # Visualization notebook
@@ -91,9 +93,14 @@ REDDIT_CLIENT_ID=your_client_id
 REDDIT_CLIENT_SECRET=your_client_secret
 REDDIT_USER_AGENT=your_user_agent
 ```
-## Running the Code using jupyter notebook 
-```
-run on the all.ipynb
+
+### Jupyter Notebooks
+```bash
+# Launch Jupyter
+jupyter notebook
+
+# Open and run:
+# - src/all.ipynb
 ```
 
 ## Running the Python Code
@@ -124,16 +131,6 @@ python src/visualization/geocoding.py
 
 # Create interactive maps
 python src/visualization/mapping.py
-```
-
-### Jupyter Notebooks
-```bash
-# Launch Jupyter
-jupyter notebook
-
-# Open and run:
-# - notebooks/data_exploration.ipynb
-# - notebooks/visualization.ipynb
 ```
 
 ## Output Files
